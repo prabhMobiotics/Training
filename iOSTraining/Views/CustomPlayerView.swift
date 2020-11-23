@@ -14,7 +14,7 @@ class CustomPlayerView: UIView {
     //MARK: Properties
     let videoPlayerView = VideoPlayer()
     private let player = AVQueuePlayer()
-        
+    
     //MARK: Initialisers
     override init(frame: CGRect) {
         super.init(frame: .zero)
@@ -33,15 +33,15 @@ class CustomPlayerView: UIView {
     }
     //MARK: Tried constraints but layout is not working as expected. Needed to give bounds to avplayerlayer of videoplayer
     
-//    private func setUpConstraints() {
-//        let safeAreaGuide = self.safeAreaLayoutGuide
-//        NSLayoutConstraint.activate([
-//            videoPlayerView.topAnchor.constraint(equalTo: self.topAnchor),
-//            videoPlayerView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-//            videoPlayerView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-//            videoPlayerView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
-//        ])
-//    }
+    //    private func setUpConstraints() {
+    //        let safeAreaGuide = self.safeAreaLayoutGuide
+    //        NSLayoutConstraint.activate([
+    //            videoPlayerView.topAnchor.constraint(equalTo: self.topAnchor),
+    //            videoPlayerView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+    //            videoPlayerView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+    //            videoPlayerView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+    //        ])
+    //    }
     
     //Adding player view inside initialiser does not display video. needed to set frames here to get the video to display.
     //MARK: LifeCycle
@@ -61,6 +61,7 @@ class CustomPlayerView: UIView {
         videoPlayerView.playerLayer.videoGravity = .resize
         addItemsToPlayer()
         play()
+
     }
     
     private func addItemsToPlayer() {
@@ -68,6 +69,10 @@ class CustomPlayerView: UIView {
         let asset = AVURLAsset(url: url)
         let item = AVPlayerItem(asset: asset)
         player.insert(item, after: player.items().last)
+    }
+    
+    private func setUpStatusObserver() {
+        
     }
     
     
@@ -78,7 +83,5 @@ class CustomPlayerView: UIView {
     func pause() {
         player.pause()
     }
-    
-    
     
 }

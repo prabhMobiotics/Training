@@ -57,7 +57,7 @@ class PlayerViewController: UIViewController {
             playBackView.bottomAnchor.constraint(equalTo: customPlayer.bottomAnchor),
             playBackView.leadingAnchor.constraint(equalTo: customPlayer.leadingAnchor),
             playBackView.trailingAnchor.constraint(equalTo: customPlayer.trailingAnchor),
-            playBackView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.05),
+//            playBackView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.10),
             
             crossView.topAnchor.constraint(equalTo: safeAreaGuide.topAnchor,constant: 10),
             crossView.trailingAnchor.constraint(equalTo: safeAreaGuide.trailingAnchor, constant: -10),

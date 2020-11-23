@@ -52,7 +52,7 @@ class ViewController: UIViewController {
 //        }
         
         let playerVc = PlayerViewController()
-        playerVc.modalPresentationStyle = .fullScreen
+        playerVc.modalPresentationStyle = .automatic
         self.present(playerVc, animated: true, completion: nil)
     }
     

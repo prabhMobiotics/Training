@@ -28,6 +28,7 @@
 		7F970F6C255C12300063ECD5 /* PlayVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F970F6B255C12300063ECD5 /* PlayVideo.swift */; };
 		7FB7A707255E4F4D00629F5D /* PlayBackControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB7A706255E4F4D00629F5D /* PlayBackControlView.swift */; };
 		7FB7A709255E9FF900629F5D /* CrossView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB7A708255E9FF900629F5D /* CrossView.swift */; };
+		7FFD948C256B8E3A0016F5F7 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFD948B256B8E3A0016F5F7 /* Box.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +89,7 @@
 		7F970F6B255C12300063ECD5 /* PlayVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayVideo.swift; sourceTree = "<group>"; };
 		7FB7A706255E4F4D00629F5D /* PlayBackControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBackControlView.swift; sourceTree = "<group>"; };
 		7FB7A708255E9FF900629F5D /* CrossView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossView.swift; sourceTree = "<group>"; };
+		7FFD948B256B8E3A0016F5F7 /* Box.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +201,7 @@
 			children = (
 				7F970F65255BCF2D0063ECD5 /* Player.swift */,
 				7F5090F6255D6DE900B8FEBE /* Constants.swift */,
+				7FFD948B256B8E3A0016F5F7 /* Box.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -353,6 +356,7 @@
 				7F5090F3255D384E00B8FEBE /* CustomPlayerView.swift in Sources */,
 				7F5090EB255D154200B8FEBE /* PlayerViewController.swift in Sources */,
 				7F970F6C255C12300063ECD5 /* PlayVideo.swift in Sources */,
+				7FFD948C256B8E3A0016F5F7 /* Box.swift in Sources */,
 				7FB7A707255E4F4D00629F5D /* PlayBackControlView.swift in Sources */,
 				7F970F66255BCF2E0063ECD5 /* Player.swift in Sources */,
 				7F970F36255BB27C0063ECD5 /* SceneDelegate.swift in Sources */,
