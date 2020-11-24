@@ -17,16 +17,36 @@ class PlayBackControlView: UIView {
             if player != nil {setupObservers()}
         }
     }
-    var isPlaying: Bool {
+    private var isPlaying: Bool {
         return player?.rate != 0 && player?.error == nil
     }
-    //var playStatus: Box<AVPlayer.Status?>?
-    var statusToken: NSKeyValueObservation?
-    var valueToken: NSKeyValueObservation?
-    var seekerObserverToken: Any?
-    var timeObserverToken: Any?
-    var currentTime: String = ""
-    var currentDuration: String = ""
+    private var statusToken: NSKeyValueObservation?
+    private var valueToken: NSKeyValueObservation?
+    private var seekerObserverToken: Any?
+    private var timeObserverToken: Any?
+    private var currentTime: String = ""
+    private var currentDuration: String = ""
+    private var regularConstraints: [NSLayoutConstraint] = []
+    private var compactConstraints: [NSLayoutConstraint] = []
+    private var commonConstraints: [NSLayoutConstraint] = []
+    //TODO: Make this height bool
+    private var height: CGFloat = 1 {
+        didSet {
+            //self.removeFromSuperview()
+            if height == 0 {
+                UIView.animate(withDuration: 0.4) { [weak self] in
+                    self?.subviews.forEach({ $0.removeFromSuperview() })
+                    self?.layoutIfNeeded()
+                }
+            } else {
+                UIView.animate(withDuration: 0.4) { [weak self] in
+                    self?.addSubViews()
+                    self?.activateConstraints()
+                }
+                
+            }
+        }
+    }
     
     lazy var playBackStackView: UIStackView = {
         let stackView = UIStackView()
@@ -81,13 +101,18 @@ class PlayBackControlView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-        
+    
     //MARK: Initialisers
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupCommonConstarints()
+        setupRegularConstraints()
+        setupCompactConstraints()
         setupViews()
-        setupConstraints()
         setupGestures()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+            self.height = 0
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -99,18 +124,22 @@ class PlayBackControlView: UIView {
         backgroundColor = .gray
         alpha = 0.7
         self.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(seekBar)
-        addSubview(playBackStackView)
-        playBackStackView.addArrangedSubview(rewindView)
-        playBackStackView.addArrangedSubview(playButtonView)
-        playBackStackView.addArrangedSubview(fastForwardView)
-        playBackStackView.addArrangedSubview(currentTimeLabel)
+        addSubViews()
+        activateConstraints()
+    }
+    
+    private func addSubViews(){
+         self.addSubview(self.seekBar)
+         self.addSubview(self.playBackStackView)
+         self.playBackStackView.addArrangedSubview(self.rewindView)
+         self.playBackStackView.addArrangedSubview(self.playButtonView)
+         self.playBackStackView.addArrangedSubview(self.fastForwardView)
+         self.playBackStackView.addArrangedSubview(self.currentTimeLabel)
     }
     
     //MARK: Constraints
-    private func setupConstraints() {
-        NSLayoutConstraint.activate([
-            
+    private func setupCommonConstarints() {
+        commonConstraints.append(contentsOf: [
             seekBar.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
             seekBar.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
             seekBar.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
@@ -118,14 +147,64 @@ class PlayBackControlView: UIView {
             playBackStackView.topAnchor.constraint(equalTo: seekBar.bottomAnchor, constant: 10),
             playBackStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
             playBackStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20),
-            
-            playButtonView.heightAnchor.constraint(equalToConstant: 22),
-            playButtonView.widthAnchor.constraint(equalToConstant: 22),
-            
-//            rewindView.heightAnchor.constraint(equalToConstant: 25),
-//            rewindView.widthAnchor.constraint(equalToConstant: 25),
-            
+
         ])
+    }
+    
+    private func setupRegularConstraints() {
+        regularConstraints.append(contentsOf: [
+            playButtonView.widthAnchor.constraint(equalToConstant: 35),
+            playButtonView.heightAnchor.constraint(equalToConstant: 35)
+        ])
+    }
+    
+    private func setupCompactConstraints() {
+        compactConstraints.append(contentsOf: [
+            playButtonView.widthAnchor.constraint(equalToConstant: 22),
+            playButtonView.heightAnchor.constraint(equalToConstant: 22 )
+        ])
+    }
+    
+    private func activateConstraints() {
+        
+        guard compactConstraints.count > 0, regularConstraints.count > 0, commonConstraints.count > 0 else {
+            fatalError("Setup constraints before activating them")
+        }
+        
+        NSLayoutConstraint.activate(commonConstraints)
+        
+        if traitCollection.horizontalSizeClass == .regular {
+            if compactConstraints.first!.isActive {
+                NSLayoutConstraint.deactivate(compactConstraints)
+            }
+            NSLayoutConstraint.activate(regularConstraints)
+        } else {
+            if regularConstraints.first!.isActive {
+                NSLayoutConstraint.deactivate(regularConstraints)
+            }
+            NSLayoutConstraint.activate(compactConstraints)
+        }
+        
+    }
+    
+    //MARK: Delegate methods
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        layoutTraits()
+        
+        if self.subviews.isEmpty == false {
+            activateConstraints()
+        }
+    }
+    
+    private func layoutTraits() {
+        if traitCollection.horizontalSizeClass == .regular {
+            currentTimeLabel.font = UIFont.boldSystemFont(ofSize: 22)
+        } else {
+            currentTimeLabel.font = UIFont.systemFont(ofSize: 17)
+        }
     }
     
     //MARK: Observers
@@ -138,6 +217,12 @@ class PlayBackControlView: UIView {
             }
         })
         
+        setupSeekerObserver()
+        setupTimeObserver()
+        
+    }
+    
+    private func setupSeekerObserver() {
         
         let timeScale = CMTimeScale(NSEC_PER_SEC)
         let time = CMTime(seconds: 0.01, preferredTimescale: timeScale)
@@ -152,11 +237,7 @@ class PlayBackControlView: UIView {
                     self?.seekBar.layoutIfNeeded()
                 }
             }
-            
         }
-        
-        setupTimeObserver()
-        
     }
     
     private func setupTimeObserver() {
@@ -180,11 +261,12 @@ class PlayBackControlView: UIView {
     private func setupGestures() {
         let playTap = UITapGestureRecognizer(target: self, action: #selector(playAndPause))
         playButtonView.addGestureRecognizer(playTap)
+        
         let forwardTap = UITapGestureRecognizer(target: self, action: #selector(seekTo))
         fastForwardView.addGestureRecognizer(forwardTap)
+        
         let rewindTap = UITapGestureRecognizer(target: self, action: #selector(rewind))
         rewindView.addGestureRecognizer(rewindTap)
-        
     }
     
     //MARK: Playback Methods
@@ -196,7 +278,6 @@ class PlayBackControlView: UIView {
             player?.play()
             playButtonView.image = UIImage(named: Constants.pauseIcon)
         }
-        
     }
     
     @objc func rewind() {
@@ -238,12 +319,18 @@ class PlayBackControlView: UIView {
         }
     }
     
-    private func getCurrentSeconds() {
-        
+    //MARK: Util Methods
+    
+    func toggleView() {
+        if self.height != 0 {
+            self.height = 0
+        } else {
+            self.height = 1
+        }
     }
     
     func secondsToHoursMinutesSeconds (seconds : Int) -> (Int, Int, Int) {
-      return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
+        return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
     }
     
     //MARK: DeInitialisers

@@ -19,6 +19,7 @@ class PlayerViewController: UIViewController {
     
     lazy var playBackView = PlayBackControlView()
     lazy var crossView = CrossView()
+    lazy var tap = UITapGestureRecognizer(target: self, action: #selector(showPlayBackControls))
     
     //MARK: LifeCycle
     override func viewDidLoad() {
@@ -34,6 +35,7 @@ class PlayerViewController: UIViewController {
         self.view.addSubview(customPlayer)
         self.view.addSubview(playBackView)
         self.view.addSubview(crossView)
+        self.view.addGestureRecognizer(tap)
         playBackView.player = customPlayer.videoPlayerView.player
         crossView.crossTapHandler = { [weak self] in
             self?.dismiss(animated: true, completion: nil)
@@ -80,6 +82,14 @@ class PlayerViewController: UIViewController {
     
     override var shouldAutorotate: Bool {
         return false
+    }
+    
+    //MARK: Actions
+    
+    @objc private func showPlayBackControls() {
+        print("showplayback controls ran")
+        self.playBackView.toggleView()
+        //setUpConstraints()
     }
     
     
